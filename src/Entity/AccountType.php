@@ -54,7 +54,7 @@ class AccountType
     {
         if (!$this->bankAccounts->contains($bankAccount)) {
             $this->bankAccounts->add($bankAccount);
-            $bankAccount->setFkACTId($this);
+            $bankAccount->setFkActId($this);
         }
 
         return $this;
