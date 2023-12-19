@@ -47,46 +47,46 @@ class ForecastController extends AbstractController
 
     }
 
-    // #[Route('/productnew', name: 'create_product', methods: ['POST'])]
-    // public function createProduct(Request $request, EntityManagerInterface $entityManager, ValidatorInterface $validator, SerializerInterface $serializer, ): Response
-    // {
-    //     $data = $request->getContent();
-    //     $product = $serializer->deserialize($data, Product::class, 'json');
-    //     $entityManager->persist($product);
-    //     $entityManager->flush();
-    //     $json = $serializer->serialize($product, 'json', ["groups" => "product_group"]);
-    //     return new JsonResponse($json, Response::HTTP_CREATED, [], true);
-    // }
+    #[Route('/forecastnew', name: 'create_forecast', methods: ['POST'])]
+    public function createForecast(Request $request, EntityManagerInterface $entityManager, ValidatorInterface $validator, SerializerInterface $serializer, ): Response
+    {
+        $data = $request->getContent();
+        $forecast = $serializer->deserialize($data, Forecast::class, 'json');
+        $entityManager->persist($forecast);
+        $entityManager->flush();
+        $json = $serializer->serialize($forecast, 'json', ["groups" => "forecast_group"]);
+        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
+    }
 
 
-    // #[Route('/product/update/{id}', name: 'update_product', methods: ['PUT'])]
-    // public function updateProduct(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, int $id): Response
-    // {
-    //     $product = $entityManager->getRepository(Product::class)->find($id);
-    //     if(!$product) {
-    //         throw $this->createNotFoundException('No product found for' . $id);
-    //     }
-    //     $serializer->deserialize($request->getContent(), Product::class, 'json', ['object_to_populate' => $product]);
-    //     $entityManager->flush();
-    //     return new JsonResponse(['status' => 'Product updated!'], Response::HTTP_OK);
-    // }
+    #[Route('/forecase/update/{id}', name: 'update_forecase', methods: ['PUT'])]
+    public function updateForecast(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, int $id): Response
+    {
+        $forecast = $entityManager->getRepository(Forecast::class)->find($id);
+        if(!$forecast) {
+            throw $this->createNotFoundException('No forecast found for' . $id);
+        }
+        $serializer->deserialize($request->getContent(), Forecast::class, 'json', ['object_to_populate' => $forecast]);
+        $entityManager->flush();
+        return new JsonResponse(['status' => 'Forecast updated!'], Response::HTTP_OK);
+    }
 
-    // #[Route('/product/delete/{id}', name: 'product_edit')]
-    // public function delete(EntityManagerInterface $entityManager, int $id): Response
-    // {
-    //     $product = $entityManager->getRepository(Product::class)->find($id);
+    #[Route('/forecast/delete/{id}', name: 'forecast_edit')]
+    public function delete(EntityManagerInterface $entityManager, int $id): Response
+    {
+        $forecast = $entityManager->getRepository(Forecast::class)->find($id);
 
-    //     if (!$product) {
-    //         throw $this->createNotFoundException(
-    //             'No product found for id ' . $id
-    //         );
-    //     }
+        if (!$forecast) {
+            throw $this->createNotFoundException(
+                'No forecast found for id ' . $id
+            );
+        }
 
-    //     $entityManager->remove($product);
-    //     $entityManager->flush();
+        $entityManager->remove($forecast);
+        $entityManager->flush();
 
-    //     return $this->redirectToRoute('app_product', [
-    //         'id' => $product->getId()
-    //     ]);
-    // }
+        return $this->redirectToRoute('app_forecast', [
+            'id' => $forecast->getId()
+        ]);
+    }
 }
