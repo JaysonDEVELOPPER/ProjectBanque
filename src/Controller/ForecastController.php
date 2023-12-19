@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -10,8 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\HttpFoundation\Request;
+
 
 class ForecastController extends AbstractController
 {
@@ -43,7 +44,7 @@ class ForecastController extends AbstractController
             );
         }
 
-        return new Response('Check out this great product: ' . $forecast->getFrcAmounts() . ',' . $forecast->getId() . ' .');
+        return new Response('Check out this forecast: ' . $forecast->getFrcAmounts() . ',' . $forecast->getId() . ' .');
 
     }
 
