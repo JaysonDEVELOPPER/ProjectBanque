@@ -85,8 +85,6 @@ class ForecastController extends AbstractController
         $entityManager->remove($forecast);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_forecast', [
-            'id' => $forecast->getId()
-        ]);
+        return new JsonResponse(['status' => 'Forecase deleted!'], Response::HTTP_OK);
     }
 }
