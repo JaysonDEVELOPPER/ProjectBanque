@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -16,12 +17,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user_basic'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['user_basic'])]
     private ?string $email = null;
 
+    #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['user_basic'])]
+    private ?string $username = null;
+
     #[ORM\Column]
+    #[Groups(['user_basic'])]
     private array $roles = [];
 
     /**
@@ -29,15 +37,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+    // Dans User.php
 
-    #[ORM\OneToMany(mappedBy: 'fk_usr_id', targetEntity: BankAccount::class)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: BankAccount::class, cascade: ['remove'])]
     private Collection $bankAccounts;
+
+
 
     public function __construct()
     {
         $this->bankAccounts = new ArrayCollection();
     }
-
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -51,6 +62,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEmail(string $email): static
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
 
         return $this;
     }
