@@ -34,7 +34,7 @@ class ForecastController extends AbstractController
     }
 
     #[Route('/forecast/{id}', name: 'forecast_show', methods: ['GET'])]
-    public function show(EntityManagerInterface $entityManager, int $id): Response
+    public function show(EntityManagerInterface $entityManager,SerializerInterface $serializer, int $id): Response
     {
         $forecast = $entityManager->getRepository(Forecast::class)->find($id);
 
@@ -43,8 +43,10 @@ class ForecastController extends AbstractController
                 'No forecast found for id ' . $id
             );
         }
-
-        return new Response('Check out this forecast: ' . $forecast->getFrcAmounts() . ',' . $forecast->getId() . ' .');
+        
+        $json = $serializer->serialize($forecast,'json', ["groups"=>"forecast_group"]);
+        // return new Response('Check out this forecast: ' . $forecast->getFrcAmounts() . ',' . $forecast->getId() . ' .');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
 
     }
 
