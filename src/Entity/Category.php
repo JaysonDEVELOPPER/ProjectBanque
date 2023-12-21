@@ -18,7 +18,7 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["category_group"])]
+    #[Groups(["category_group", "banqueAccount_group", "transaction_read"])]
     private ?string $cat_type = null;
 
     #[ORM\OneToMany(mappedBy: 'fk_cat_id', targetEntity: Transaction::class)]

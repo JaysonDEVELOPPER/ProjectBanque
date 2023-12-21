@@ -17,19 +17,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user_basic'])]
+    #[Groups(['user_group',])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['user_basic'])]
+    #[Groups(['user_group', "banqueAccount_group"])]
     private ?string $email = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['user_basic'])]
+    #[Groups(['user_group', "banqueAccount_group"])]
     private ?string $username = null;
 
     #[ORM\Column]
-    #[Groups(['user_basic'])]
+    #[Groups(['user_group', "banqueAccount_group"])]
     private array $roles = [];
 
     /**
@@ -39,7 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
     // Dans User.php
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: BankAccount::class, cascade: ['remove'])]
+    #[ORM\OneToMany(mappedBy: 'fk_usr_id', targetEntity: BankAccount::class, orphanRemoval: true)]
     private Collection $bankAccounts;
 
 
@@ -48,7 +48,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->bankAccounts = new ArrayCollection();
     }
-    
+
     public function getId(): ?int
     {
         return $this->id;

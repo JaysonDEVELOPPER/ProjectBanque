@@ -3,104 +3,107 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
+use Doctrine\ORM\EntityManagerInterface;  // Gestionnaire d'entités pour les interactions avec la base de données
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;  // Classe de base pour tous les contrôleurs dans Symfony
+use Symfony\Component\HttpFoundation\JsonResponse;  // Pour envoyer des réponses JSON
+use Symfony\Component\HttpFoundation\Request;  // Pour gérer les requêtes HTTP
+use Symfony\Component\HttpFoundation\Response;  // Classe de base pour les réponses HTTP
+use Symfony\Component\Routing\Annotation\Route;  // Annotation pour définir les routes
+use Symfony\Component\Serializer\SerializerInterface;  // Pour sérialiser/désérialiser les données
+use Symfony\Component\Validator\Validator\ValidatorInterface;  // Pour la validation des entités
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-#[Route('/user')]
+
 class UserController extends AbstractController
 {
-    #[Route('/', name: 'user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
-    {
-        $users = $userRepository->findAll();
-        $json = $serializer->serialize($users, 'json', ['groups' => 'user_basic']);
 
+    #[Route('/Users', name: 'app_users', methods: ['GET'])]
+    public function getAll(SerializerInterface $serializer, EntityManagerInterface $entityManager): Response
+    {
+        // Récupération de tous les users de la base de données
+        $users = $entityManager->getRepository(User::class)->findAll();
+        // Sérialisation des Utilisateurs en JSON
+        $json = $serializer->serialize($users, 'json', ["groups" => "user_group"]);
+        // Retourne une réponse JSON avec les Utilisateurs
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
-
-
-    #[Route('/new', name: 'user_new', methods: ['POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    #[Route('/User/{id}', name: 'user_show', methods: ['GET'])]
+    public function showByID(EntityManagerInterface $entityManager, SerializerInterface $serializer, int $id): Response
     {
+        // Recherche du Utilisateur par son identifiant
+        $user = $entityManager->getRepository(User::class)->findOneBy(["id" => $id]);
+
+        // Si aucun Utilisateur n'est trouvé, déclenche une exception
+        if (!$user) {
+            throw $this->createNotFoundException(
+                'No User found for id ' . $id
+            );
+        }
+
+        // Sérialisation du Utilisateur trouvé en JSON
+        $json = $serializer->serialize($user, 'json', ["groups" => "user_group"]);
+        // Retourne une réponse JSON avec le Utilisateur
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+    #[Route('/User', name: 'create_user', methods: ['POST'])]
+    public function createUser(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator, UserPasswordHasherInterface $passwordHasher): Response
+    {
+        // Désérialisation de la requête JSON en un objet User
         $user = $serializer->deserialize($request->getContent(), User::class, 'json');
-
+        // Validation de l'objet User
+        $errors = $validator->validate($user);
+        // Si des erreurs sont détectées, renvoie une réponse avec ces erreurs
+        if (count($errors) > 0) {
+            return new Response((string) $errors, 400);
+        }
         // Hashage du mot de passe
-        $hashedPassword = $passwordHasher->hashPassword($user, $user->getPassword());
+        $plainPassword = $user->getPassword();
+        $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
         $user->setPassword($hashedPassword);
-
+        // Persistance du nouveau Utilisateur en base de données
         $entityManager->persist($user);
         $entityManager->flush();
 
-        return new JsonResponse(['status' => 'User created'], Response::HTTP_CREATED);
+        // Retourne une réponse JSON indiquant la création du Utilisateur
+        return new JsonResponse(['status' => 'User created!'], Response::HTTP_CREATED);
     }
-
-    #[Route('/{id}', name: 'user_show', methods: ['GET'])]
-    public function show(User $user, SerializerInterface $serializer): JsonResponse
+    #[Route('/User/edit/{id}', name: 'user_edit', methods: ['PUT'])]
+    public function update(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, int $id, UserPasswordHasherInterface $passwordHasher): Response
     {
-        $json = $serializer->serialize($user, 'json', ['groups' => 'user_basic']);
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
-    }
-
-    #[Route('/email/{email}', name: 'user_by_email', methods: ['GET'])]
-    public function getByEmail(string $email, UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
-    {
-        $users = $userRepository->findByEmailLike($email);
-        if (!$users) {
-            return new JsonResponse(['status' => 'No users found'], Response::HTTP_NOT_FOUND);
+        // Recherche du Utilisateur à mettre à jour
+        $user = $entityManager->getRepository(User::class)->find($id);
+        // Si aucun Utilisateur n'est trouvé, déclenche une exception
+        if (!$user) {
+            throw $this->createNotFoundException('No User found for id ' . $id);
         }
 
-        $json = $serializer->serialize($users, 'json', ['groups' => 'user_basic']);
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
-    }
-
-
-    #[Route('/{id}/edit', name: 'user_edit', methods: ['PUT'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager, SerializerInterface $serializer, UserPasswordHasherInterface $passwordHasher): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-
-        // Mise à jour de l'email
-        if (array_key_exists('email', $data)) {
-            $user->setEmail($data['email']);
-        }
-
-        // Mise à jour du nom
-        if (array_key_exists('username', $data)) {
-            $user->setUsername($data['username']);
-        }
-
-        // Mise à jour du mot de passe
-        if (array_key_exists('password', $data) && !empty($data['password'])) {
-            $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
-            $user->setPassword($hashedPassword);
-        }
-
-        // Mise à jour des rôles
-        if (array_key_exists('roles', $data)) {
-            $user->setRoles($data['roles']);
-        }
-
-        // Enregistrement des modifications
+        // Désérialisation des données de la requête dans l'objet User existant
+        $serializer->deserialize($request->getContent(), User::class, 'json', ['object_to_populate' => $user]);
+        // Hashage du mot de passe
+        $plainPassword = $user->getPassword();
+        $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+        $user->setPassword($hashedPassword);
+        // Sauvegarde des modifications en base de données
         $entityManager->flush();
 
-        return new JsonResponse(['status' => 'Utilisateur bien mis à jours'], Response::HTTP_OK);
+        // Retourne une réponse JSON indiquant la mise à jour du Utilisateur
+        return new JsonResponse(['status' => 'User updated!'], Response::HTTP_OK);
     }
-
-
-    #[Route('/{id}', name: 'user_delete', methods: ['DELETE'])]
-    public function delete(User $user, EntityManagerInterface $entityManager): JsonResponse
+    #[Route('/User/delete/{id}', name: 'delete_user', methods: ['DELETE'])]
+    public function delete(EntityManagerInterface $entityManager, int $id): Response
     {
+        // Recherche du Utilisateur à supprimer
+        $user = $entityManager->getRepository(User::class)->find($id);
+        // Si aucun Utilisateur n'est trouvé, déclenche une exception
+        if (!$user) {
+            throw $this->createNotFoundException('No User found for id ' . $id);
+        }
 
+        // Suppression du Utilisateur de la base de données
         $entityManager->remove($user);
         $entityManager->flush();
 
-        return new JsonResponse(['status' => 'User deleted'], Response::HTTP_OK);
+        // Retourne une réponse JSON indiquant la suppression du Utilisateur
+        return new JsonResponse(['status' => 'User deleted!'], Response::HTTP_OK);
     }
 }

@@ -3,11 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\TransactionTypeRepository;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
+use Symfony\Component\Serializer\Annotation\Groups;
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TransactionTypeRepository::class)]
 class TransactionType
@@ -19,7 +18,7 @@ class TransactionType
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["transactionType_group"])]
+    #[Groups(["transactionType_group", "transaction_read"])]
     private ?string $trt_type = null;
 
     #[ORM\OneToMany(mappedBy: 'fk_trt_id', targetEntity: Transaction::class)]
@@ -29,7 +28,6 @@ class TransactionType
     {
         $this->transactions = new ArrayCollection();
     }
-
 
     public function getId(): ?int
     {
@@ -47,6 +45,7 @@ class TransactionType
 
         return $this;
     }
+
     /**
      * @return Collection<int, Transaction>
      */
@@ -55,15 +54,15 @@ class TransactionType
         return $this->transactions;
     }
 
-    // public function addTransaction(Transaction $transaction): static
-    // {
-    //     if (!$this->transactions->contains($transaction)) {
-    //         $this->transactions->add($transaction);
-    //         $transaction->setFkTrtId($this);
-    //     }
+    public function addTransaction(Transaction $transaction): static
+    {
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions->add($transaction);
+            $transaction->setFkTrtId($this);
+        }
 
-    //     return $this;
-    // }
+        return $this;
+    }
 
     public function removeTransaction(Transaction $transaction): static
     {
