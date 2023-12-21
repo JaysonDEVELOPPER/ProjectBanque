@@ -14,16 +14,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class TransactionTypeController extends AbstractController
 {
-    #[Route('/transaction/type', name: 'app_transaction_type')]
-    public function index(): JsonResponse
-    {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/TransactionTypeController.php',
-        ]);
-    }
+
     //Read All
-    #[Route('/transaction/type/all', name: 'app_transactiontype_all', methods: ['GET'])]
+    #[Route('/TransactionTypes', name: 'app_transactiontype_all', methods: ['GET'])]
 
     public function getAll(SerializerInterface $serializer, EntityManagerInterface $entityManager): Response
     {
@@ -36,7 +29,7 @@ class TransactionTypeController extends AbstractController
 
     }
     // Read One:
-    #[Route('/transaction/type/{id}', name: 'app_transactiontype_one', methods: ['GET'])]
+    #[Route('/TransactionType/{id}', name: 'app_transactiontype_one', methods: ['GET'])]
     public function getById(SerializerInterface $serializer, EntityManagerInterface $entityManager, int $id): Response
     {
         $transactionType = $entityManager->getRepository(TransactionType::class)->find($id);
@@ -52,7 +45,7 @@ class TransactionTypeController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
     //Create:
-    #[Route('/transaction/type/new', name: 'app_transactiontype_new', methods: ['POST'])]
+    #[Route('/TransactionType', name: 'app_transactiontype_new', methods: ['POST'])]
     public function createProduct(Request $request, ValidatorInterface $validator, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
         $data = $request->getContent();
@@ -72,7 +65,7 @@ class TransactionTypeController extends AbstractController
         }
     }
     //Update:
-    #[Route('/transaction/type/edit/{id}', name: 'app_transactiontype_edit', methods: ['PUT'])]
+    #[Route('/TransactionType/edit/{id}', name: 'app_transactiontype_edit', methods: ['PUT'])]
     public function update(EntityManagerInterface $entityManager, SerializerInterface $serializer, int $id, Request $request): Response
     {
         $transactionType = $entityManager->getRepository(TransactionType::class)->find($id);
@@ -89,7 +82,7 @@ class TransactionTypeController extends AbstractController
         return new JsonResponse($json, Response::HTTP_ACCEPTED, [], true);
     }
     //Delete:
-    #[Route('/transaction/type/delete/{id}', name: 'app_transactiontype_delete', methods: ['DELETE'])]
+    #[Route('/TransactionType/delete/{id}', name: 'app_transactiontype_delete', methods: ['DELETE'])]
     public function delete(EntityManagerInterface $entityManager, int $id): Response
     {
         $transactionType = $entityManager->getRepository(TransactionType::class)->find($id);

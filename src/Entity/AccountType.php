@@ -15,16 +15,16 @@ class AccountType
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups (["account_type_groups"])]
+    #[Groups(["account_type_groups",])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups (["account_type_groups"])]
+    #[Groups(["account_type_groups", "banqueAccount_group"])]
 
     private ?string $act_type = null;
 
     #[ORM\OneToMany(mappedBy: 'fk_act_id', targetEntity: BankAccount::class)]
-    #[Groups (["account_type_groups"])]
+
 
     private Collection $bankAccounts;
 

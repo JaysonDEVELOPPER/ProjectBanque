@@ -15,7 +15,7 @@ class AccountTypeController extends AbstractController
 {
 
     // A voir 
-    #[Route("/account/type", name: 'app_account_type', methods: ['GET'])]
+    #[Route("/AccountTypes", name: 'app_account_type', methods: ['GET'])]
     public function getAllAccount(SerializerInterface $serializer, EntityManagerInterface $em): Response
     {
         $accountType = $em->getRepository(AccountType::class)->findAll();
@@ -24,7 +24,7 @@ class AccountTypeController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route("/account/type/{id}", name: "app_account_type_id", methods: ['GET'])]
+    #[Route("/AccountType/{id}", name: "app_account_type_id", methods: ['GET'])]
     public function getAccountTypeById(int $id, serializerInterface $serializer, EntityManagerInterface $em): Response
     {
         $accountType = $em->getRepository(AccountType::class)->find($id);
@@ -33,7 +33,7 @@ class AccountTypeController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route("/account/type/create", name: "app_create_account_type", methods: ["POST"])]
+    #[Route("/AccountType", name: "app_create_account_type", methods: ["POST"])]
     public function createAccount(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
         $data = $request->getContent();
@@ -44,7 +44,7 @@ class AccountTypeController extends AbstractController
         return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
-    #[Route("/account/type/update/{id}", name: "app_update_account_type", methods: ["PUT"])]
+    #[Route("/AccountType/edit/{id}", name: "app_update_account_type", methods: ["PUT"])]
     public function updateAccount(int $id, Request $request, EntityManagerInterface $em, SerializerInterface $serializer): Response
     {
         $accountType = $em->getRepository(AccountType::class)->find($id);
@@ -52,17 +52,17 @@ class AccountTypeController extends AbstractController
         $updateAccount = $serializer->deserialize($data, AccountType::class, 'json');
         $accountType->setActType($updateAccount->getActType());
         $em->persist($accountType);
-        $em->flush();   
+        $em->flush();
         $json = $serializer->serialize($accountType, 'json', ["groups" => "account_type_groups"]);
-        
+
         return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
-    #[Route("/account/type/delete/{id}", name:"app_delete_account_type", methods: ["DELETE"])]
+    #[Route("/AccountType/delete/{id}", name: "app_delete_account_type", methods: ["DELETE"])]
     public function deleteAccount(int $id, EntityManagerInterface $entityManager): Response
     {
         $accountType = $entityManager->getRepository(AccountType::class)->find($id);
-        if(!$accountType) {
+        if (!$accountType) {
             throw $this->createNotFoundException(
                 'Not found' . $id
             );
