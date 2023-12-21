@@ -14,32 +14,32 @@ class BankAccount
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["banqueAccount_group"])]
+    #[Groups(["BankAccount_group"])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(["banqueAccount_group"])]
+    #[Groups(["BankAccount_group", "BankAccount_edit_group"])]
     private ?float $bnk_balance = null;
 
     #[ORM\Column]
-    #[Groups(["banqueAccount_group"])]
+    #[Groups(["BankAccount_group", "BankAccount_edit_group"])]
     private ?bool $bnk_debit = null;
 
     #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'bankAccounts', cascade: ['persist'])]
-    #[Groups(["banqueAccount_group"])]
+    #[Groups(["BankAccount_group",])]
     private ?User $fk_usr_id = null;
 
     #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'bankAccounts', cascade: ['persist'])]
-    #[Groups(["banqueAccount_group"])]
+    #[Groups(["BankAccount_group"])]
     private ?AccountType $fk_act_id = null;
 
 
     #[ORM\OneToOne(fetch: 'EAGER', cascade: ['persist', 'remove'])]
-    #[Groups(["banqueAccount_group"])]
+    #[Groups(["BankAccount_group"])]
     private ?Forecast $fk_frc_id = null;
 
     #[ORM\OneToMany(fetch: 'EAGER', mappedBy: 'fk_bnk_id', targetEntity: Transaction::class)]
-    #[Groups(["banqueAccount_group"])]
+    #[Groups(["BankAccount_group"])]
     private Collection $transactions;
 
     public function __construct()

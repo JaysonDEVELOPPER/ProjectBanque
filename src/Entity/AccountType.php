@@ -19,7 +19,7 @@ class AccountType
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["account_type_groups", "banqueAccount_group"])]
+    #[Groups(["account_type_groups", "BankAccount_group"])]
 
     private ?string $act_type = null;
 

@@ -21,15 +21,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['user_group', "banqueAccount_group"])]
+    #[Groups(['user_group', "BankAccount_group"])]
     private ?string $email = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['user_group', "banqueAccount_group"])]
+    #[Groups(['user_group', "BankAccount_group"])]
     private ?string $username = null;
 
     #[ORM\Column]
-    #[Groups(['user_group', "banqueAccount_group"])]
+    #[Groups(['user_group', "BankAccount_group"])]
     private array $roles = [];
 
     /**

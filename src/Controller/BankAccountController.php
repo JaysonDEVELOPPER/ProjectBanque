@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Entity\AccountType;
+use App\Entity\Forecast;
 use App\Entity\BankAccount;
 use App\Entity\Transaction;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +23,7 @@ class BankAccountController extends AbstractController
     public function getAll(SerializerInterface $serializer, EntityManagerInterface $em): Response
     {
         $BankAccount = $em->getRepository(BankAccount::class)->findAll();
-        $json = $serializer->serialize($BankAccount, 'json', ['groups' => 'banqueAccount_group']);
+        $json = $serializer->serialize($BankAccount, 'json', ['groups' => 'BankAccount_group']);
 
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
@@ -36,27 +39,55 @@ class BankAccountController extends AbstractController
             );
         }
 
-        $json = $serializer->serialize($BankAccount, 'json', ['groups' => 'banqueAccount_group']);
+        $json = $serializer->serialize($BankAccount, 'json', ['groups' => 'BankAccount_group']);
 
         return new Response($json, Response::HTTP_OK, [], true);
     }
 
     #[Route('/BankAccount', name: 'create_banKAccount', methods: ['POST'])]
-    public function createBankAccount(Request $request, EntityManagerInterface $em, ValidatorInterface $validator, SerializerInterface $serializer,): Response
+    public function createBankAccount(Request $request, EntityManagerInterface $em, ValidatorInterface $validator, SerializerInterface $serializer): Response
     {
-
         $data = $request->getContent();
-        $BankAccount = $serializer->deserialize($data, BankAccount::class, 'json');
-        $em->persist($BankAccount);
-        $em->flush();
-        $json = $serializer->serialize($BankAccount, 'json', ["groups" => "banqueAccount_group"]);
-        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
+        $bankAccountData = json_decode($data, true);
 
+        // Extraire l'ID de l'utilisateur et l'ID du type de compte
+        $userId = $bankAccountData['fk_usr_id_id'] ?? null;
+        $accountTypeId = $bankAccountData['fk_act_id_id'] ?? null;
+
+        // Charger les entités FK
+        $user = $userId ? $em->getRepository(User::class)->find($userId) : null;
+        $accountType = $accountTypeId ? $em->getRepository(AccountType::class)->find($accountTypeId) : null;
+
+        if (!$user || !$accountType) {
+            return new Response('User or AccountType not found', Response::HTTP_BAD_REQUEST);
+        }
+
+        // Créer une nouvelle instance de Forecast
+        $forecast = new Forecast();
+        // Ici, configurez votre objet Forecast selon les besoins
+
+        // Désérialiser le BankAccount et associer les entités FK
+        $BankAccount = $serializer->deserialize($data, BankAccount::class, 'json');
+        $BankAccount->setFkUsrId($user);
+        $BankAccount->setFkActId($accountType);
+        $BankAccount->setFkFrcId($forecast); // Associer le Forecast créé
+
+        // Valider et persister le BankAccount et le Forecast
         $errors = $validator->validate($BankAccount);
         if (count($errors) > 0) {
             return new Response((string) $errors, 400);
         }
+
+        $em->persist($forecast);
+        $em->persist($BankAccount);
+        $em->flush();
+
+        $json = $serializer->serialize($BankAccount, 'json', ["groups" => "banqueAccount_group"]);
+        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
+
+
+
 
     #[Route('/BankAccount/edit/{id}', name: 'banKAccount_edit', methods: ['PUT'])]
     public function update(
@@ -70,11 +101,8 @@ class BankAccountController extends AbstractController
         $updatedBanKAccount = $serializer->deserialize($data, BankAccount::class, 'json');
         $BankAccount->setBnkBalance($updatedBanKAccount->getBnkBalance());
         $BankAccount->setBnkDebit($updatedBanKAccount->isBnkDebit());
-        $BankAccount->setFkUsrId($updatedBanKAccount->getFkUsrId());
-        $BankAccount->setFkActId($updatedBanKAccount->getFkActId());
-        $BankAccount->setFkFrcId($updatedBanKAccount->getFkFrcId());
         $entityManager->flush();
-        $json = $serializer->serialize($BankAccount, 'json', ["groups" => "banqueAccount_group"]);
+        $json = $serializer->serialize($BankAccount, 'json', ["groups" => "BankAccount_edit_group"]);
         return new JsonResponse($json, Response::HTTP_ACCEPTED, [], true);
     }
 

@@ -28,15 +28,15 @@ class Transaction
     #[Groups(["transaction_read", "transaction_write", "banqueAccount_group"])]
     private ?bool $trs_debit = null;
 
-    #[ORM\ManyToOne(inversedBy: 'transactions')]
+    #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'transactions', cascade: ['persist'])]
     #[Groups(["transaction_write", "transaction_read"])]
     private ?TransactionType $fk_trt_id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'transactions')]
+    #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'transactions', cascade: ['persist'])]
     #[Groups(["transaction_read", "transaction_write", "banqueAccount_group"])]
     private ?Category $fk_cat_id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'transactions')]
+    #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'transactions', cascade: ['persist'])]
     #[Groups(["transaction_write"])]
     private ?BankAccount $fk_bnk_id = null;
 
