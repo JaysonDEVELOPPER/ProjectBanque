@@ -39,7 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
     // Dans User.php
 
-    #[ORM\OneToMany(mappedBy: 'fk_usr_id', targetEntity: BankAccount::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'fk_usr_id', targetEntity: BankAccount::class, cascade: ['remove'])]
     private Collection $bankAccounts;
 
 

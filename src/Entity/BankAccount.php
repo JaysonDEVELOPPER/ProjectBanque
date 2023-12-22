@@ -38,7 +38,7 @@ class BankAccount
     #[Groups(["BankAccount_group"])]
     private ?Forecast $fk_frc_id = null;
 
-    #[ORM\OneToMany(fetch: 'EAGER', mappedBy: 'fk_bnk_id', targetEntity: Transaction::class)]
+    #[ORM\OneToMany(fetch: 'EAGER', mappedBy: 'fk_bnk_id', targetEntity: Transaction::class, cascade: ['remove'])]
     #[Groups(["BankAccount_group"])]
     private Collection $transactions;
 
