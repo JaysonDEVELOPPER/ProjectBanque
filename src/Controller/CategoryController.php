@@ -16,7 +16,7 @@ class CategoryController extends AbstractController
 {
 
     // Route pour obtenir tous les catégories
-    #[Route('/categories', name: 'app_categories', methods: ['GET'])]
+    #[Route('/Categories', name: 'app_categories', methods: ['GET'])]
     public function getAll(SerializerInterface $serializer, EntityManagerInterface $entityManager): Response
     {
         // Récupération de tous les catégories de la base de données
@@ -28,7 +28,7 @@ class CategoryController extends AbstractController
     }
 
     // Route pour afficher un catégorie par son identifiant
-    #[Route('/category/{id}', name: 'category_show', methods: ['GET'])]
+    #[Route('/Category/{id}', name: 'category_show', methods: ['GET'])]
     public function showByID(EntityManagerInterface $entityManager, SerializerInterface $serializer, int $id): Response
     {
         // Recherche du catégorie par son identifiant
@@ -48,7 +48,7 @@ class CategoryController extends AbstractController
     }
 
     // Route pour créer un nouveau catégorie
-    #[Route('/category', name: 'create_category', methods: ['POST'])]
+    #[Route('/Category', name: 'create_category', methods: ['POST'])]
     public function createCategory(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, ValidatorInterface $validator): Response
     {
         // Désérialisation de la requête JSON en un objet Category
@@ -69,7 +69,7 @@ class CategoryController extends AbstractController
     }
 
     // Route pour mettre à jour une catégorie existante
-    #[Route('/category/edit/{id}', name: 'category_edit', methods: ['PUT'])]
+    #[Route('/Category/edit/{id}', name: 'category_edit', methods: ['PUT'])]
     public function update(Request $request, SerializerInterface $serializer, EntityManagerInterface $entityManager, int $id): Response
     {
         // Recherche du catégorie à mettre à jour
@@ -89,7 +89,7 @@ class CategoryController extends AbstractController
     }
 
     // Route pour supprimer un catégorie
-    #[Route('/category/delete/{id}', name: 'delete_category', methods: ['DELETE'])]
+    #[Route('/Category/delete/{id}', name: 'delete_category', methods: ['DELETE'])]
     public function delete(EntityManagerInterface $entityManager, int $id): Response
     {
         // Recherche du catégorie à supprimer
