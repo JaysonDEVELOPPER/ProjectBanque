@@ -37,8 +37,8 @@ class Transaction
     private ?Category $fk_cat_id = null;
 
     #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'transactions', cascade: ['persist'])]
-    #[Groups(["transaction_write"])]
     private ?BankAccount $fk_bnk_id = null;
+    
 
     public function getId(): ?int
     {

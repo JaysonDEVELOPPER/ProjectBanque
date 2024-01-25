@@ -108,20 +108,21 @@ class BankAccountController extends AbstractController
 
 
     #[Route('/BankAccount/delete/{id}', name: 'banKAccount_delete')]
-    public function delete(EntityManagerInterface $em, int $id, Transaction $transaction): Response
+    public function delete(EntityManagerInterface $em, int $id): Response
     {
-        $BankAccount = $em->getRepository(BankAccount::class)->find($id);
+        $bankAccount = $em->getRepository(BankAccount::class)->find($id);
 
-        if (!$BankAccount) {
-            throw $this->createNotFoundException(
-                'No product found for id ' . $id
-            );
+        if (!$bankAccount) {
+            throw $this->createNotFoundException('No BankAccount found for id ' . $id);
         }
 
-        $BankAccount->removeTransaction($transaction);
-        $em->remove($BankAccount);
+        foreach ($bankAccount->getTransactions() as $transaction) {
+            $em->remove($transaction);
+        }
+
+        $em->remove($bankAccount);
         $em->flush();
 
-        return new JsonResponse(['status' => 'BanKAccount deleted'], Response::HTTP_OK);
+        return new JsonResponse(['status' => 'BankAccount deleted'], Response::HTTP_OK);
     }
 }

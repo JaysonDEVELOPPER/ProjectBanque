@@ -104,4 +104,14 @@ class TransactionController extends AbstractController
         $entityManager->flush();
         return new JsonResponse(['status' => 'Transaction deleted!'], Response::HTTP_OK);
     }
+
+    // src/Controller/TransactionController.php
+
+    #[Route('/transactions/bankaccount/{bankAccountId}', name: 'transactions_by_bank_account', methods: ['GET'])]
+    public function getByBankAccountId(EntityManagerInterface $entityManager, SerializerInterface $serializer, int $bankAccountId): Response
+    {
+        $transactions = $entityManager->getRepository(Transaction::class)->findByBankAccountId($bankAccountId);
+        $json = $serializer->serialize($transactions, 'json', ['groups' => 'transaction_read']);
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
 }

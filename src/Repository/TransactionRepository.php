@@ -21,28 +21,40 @@ class TransactionRepository extends ServiceEntityRepository
         parent::__construct($registry, Transaction::class);
     }
 
-//    /**
-//     * @return Transaction[] Returns an array of Transaction objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    // src/Repository/TransactionRepository.php
 
-//    public function findOneBySomeField($value): ?Transaction
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    public function findByBankAccountId($bankAccountId)
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.fk_bnk_id = :bankAccountId') // Assurez-vous que cela correspond au nom de la propriété dans l'entité
+            ->setParameter('bankAccountId', $bankAccountId)
+            ->getQuery()
+            ->getResult();
+    }
+
+
+    //    /**
+    //     * @return Transaction[] Returns an array of Transaction objects
+    //     */
+    //    public function findByExampleField($value): array
+    //    {
+    //        return $this->createQueryBuilder('t')
+    //            ->andWhere('t.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->orderBy('t.id', 'ASC')
+    //            ->setMaxResults(10)
+    //            ->getQuery()
+    //            ->getResult()
+    //        ;
+    //    }
+
+    //    public function findOneBySomeField($value): ?Transaction
+    //    {
+    //        return $this->createQueryBuilder('t')
+    //            ->andWhere('t.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }
